@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#232a55"/>
+      <stop offset="1" stop-color="#0f1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <!-- stage -->
+  <rect x="96" y="368" width="320" height="34" rx="14" fill="#3b4573"/>
+  <rect x="110" y="370" width="292" height="8" rx="4" fill="#ffb02e"/>
+  <!-- left fighter (orange) leaning in -->
+  <g transform="rotate(8 190 300)">
+    <rect x="140" y="220" width="104" height="148" rx="30" fill="#ffb02e" stroke="#0f1220" stroke-width="10"/>
+    <circle cx="206" cy="272" r="9" fill="#10122a"/>
+    <circle cx="228" cy="272" r="9" fill="#10122a"/>
+  </g>
+  <!-- right fighter (pink) launched -->
+  <g transform="rotate(-24 340 240)">
+    <rect x="290" y="160" width="96" height="136" rx="28" fill="#ff5470" stroke="#0f1220" stroke-width="10"/>
+    <path d="M318 212 l16 16 m0 -16 l-16 16" stroke="#10122a" stroke-width="8" stroke-linecap="round"/>
+    <path d="M352 212 l16 16 m0 -16 l-16 16" stroke="#10122a" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <!-- impact spark -->
+  <g fill="#ffdd55">
+    <polygon points="268,180 282,214 316,208 290,232 306,262 272,244 250,272 254,236 220,228 254,216"/>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+name = "smack-town-arena-turn"
+main = "turn-worker.js"
+compatibility_date = "2024-09-23"
+
+[[routes]]
+pattern = "smacktownarena.com/api/turn-credentials"
+zone_name = "smacktownarena.com"

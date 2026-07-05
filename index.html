@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>SmackTown</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ LOGIN (first run) ============ -->
+<section id="screen-login" class="screen">
+  <div class="panel narrow">
+    <h1 class="logo">SMACK<span>TOWN</span></h1>
+    <p class="tagline">P2P pocket brawler</p>
+    <label class="field-label" for="login-name">Pick your fighter name</label>
+    <input id="login-name" type="text" maxlength="14" autocomplete="off"
+           placeholder="e.g. KnuckleDuke" spellcheck="false">
+    <p id="login-error" class="error hidden"></p>
+    <label class="field-label">Pick your color</label>
+    <div id="login-colors" class="color-grid"></div>
+    <button id="login-go" class="btn primary big">Enter SmackTown</button>
+  </div>
+</section>
+
+<!-- ============ MAIN MENU ============ -->
+<section id="screen-menu" class="screen hidden">
+  <div class="panel narrow">
+    <h1 class="logo small">SMACK<span>TOWN</span></h1>
+    <div class="menu-char-row">
+      <button id="menu-char-prev" class="hat-arrow" aria-label="Previous character">◀</button>
+      <div id="menu-card" class="fighter-card" role="button" tabindex="0"
+           aria-label="Edit this character" title="Tap to edit">
+        <canvas id="menu-preview" width="120" height="120"></canvas>
+        <div class="fighter-card-info">
+          <div id="menu-name" class="fighter-name"></div>
+          <div id="menu-loadout" class="fighter-loadout"></div>
+          <div id="menu-build" class="fighter-build"></div>
+        </div>
+        <span class="fighter-card-edit" aria-hidden="true">✏️</span>
+      </div>
+      <button id="menu-char-next" class="hat-arrow" aria-label="Next character">▶</button>
+    </div>
+    <button id="menu-solo"    class="btn primary big">Practice vs Bot</button>
+    <div class="join-row">
+      <input id="menu-code" type="text" maxlength="4" placeholder="CODE"
+             autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button id="menu-join" class="btn primary">Join / Host</button>
+    </div>
+    <p class="join-hint">Enter a code to join a room — leave it blank to host a new one.</p>
+    <div id="menu-online" class="online-box">
+      <h3 class="section-title">Fighters online <span id="menu-online-count" class="hint"></span></h3>
+      <ul id="menu-online-list" class="roster online-list"></ul>
+      <p id="menu-online-empty" class="online-empty">Looking for fighters…</p>
+    </div>
+    <button id="menu-builder" class="btn ghost">Edit Fighter &amp; Build</button>
+    <button id="menu-install" class="btn ghost install hidden">📲 Install App</button>
+    <p id="install-hint" class="install-hint hidden">
+      On iPhone/iPad: tap <b>Share</b> <span class="share-glyph">⎋</span> then
+      <b>Add to Home Screen</b> to install.
+    </p>
+    <p id="menu-error" class="error hidden"></p>
+  </div>
+</section>
+
+<!-- ============ FIGHTER BUILDER ============ -->
+<section id="screen-builder" class="screen hidden">
+  <div class="panel wide">
+    <header class="builder-head">
+      <div class="builder-title">
+        <h2>Fighter Workshop</h2>
+        <div id="builder-editing" class="builder-editing"></div>
+      </div>
+      <div class="credits-pill">
+        <span id="builder-credits">0</span><span class="credits-label">cr left</span>
+      </div>
+    </header>
+    <div class="builder-scroll">
+      <h3 class="section-title">Fighter Name <span class="hint">how the town knows you</span></h3>
+      <input id="builder-name" type="text" maxlength="14" autocomplete="off"
+             placeholder="e.g. KnuckleDuke" spellcheck="false">
+      <p id="builder-name-error" class="error hidden"></p>
+
+      <h3 class="section-title">Saved Builds <span class="hint">stash setups by nickname, tap to load</span></h3>
+      <div id="builder-loadouts" class="loadout-list"></div>
+      <div class="loadout-save-row">
+        <input id="loadout-name" type="text" maxlength="16" placeholder="Nickname this build"
+               autocomplete="off" spellcheck="false">
+        <button id="loadout-save" class="btn">💾 Save</button>
+      </div>
+      <p id="loadout-error" class="error hidden"></p>
+
+      <h3 class="section-title">Color</h3>
+      <div id="builder-colors" class="color-grid"></div>
+
+      <h3 class="section-title">Hat <span class="hint">arrows swap hats from your library</span></h3>
+      <div class="builder-preview">
+        <button id="builder-hat-prev" class="hat-arrow" aria-label="Previous hat">◀</button>
+        <div class="builder-preview-fig">
+          <canvas id="builder-preview-canvas" width="140" height="140"></canvas>
+          <div id="builder-hat-label" class="hat-cycle-label">No hat</div>
+        </div>
+        <button id="builder-hat-next" class="hat-arrow" aria-label="Next hat">▶</button>
+      </div>
+      <button id="builder-hat-library" class="btn ghost">🎩 Hat Library</button>
+
+      <h3 class="section-title">Upgrades <span class="hint">raise your core stats</span></h3>
+      <div id="builder-stats"></div>
+
+      <h3 class="section-title">Abilities <span class="hint">pick up to 2 — mapped to the two action buttons</span></h3>
+      <div id="builder-abilities" class="shop-grid"></div>
+
+      <h3 class="section-title">Augments <span class="hint">pick up to 2 passives</span></h3>
+      <div id="builder-augments" class="shop-grid"></div>
+    </div>
+    <footer class="builder-foot">
+      <button id="builder-reset" class="btn ghost">Reset</button>
+      <button id="builder-save" class="btn primary">Save &amp; Back</button>
+    </footer>
+  </div>
+</section>
+
+<!-- ============ HAT STUDIO ============ -->
+<section id="screen-hat" class="screen hidden">
+  <div class="panel narrow hat-panel">
+    <h2 class="hat-head">Hat Studio</h2>
+    <p class="tagline hat-tag">draw in the box — your fighter wears it</p>
+    <canvas id="hat-canvas"></canvas>
+    <div id="hat-palette" class="hat-palette"></div>
+    <div class="hat-tools">
+      <button id="hat-eraser" class="btn tiny ghost">🧽 Eraser</button>
+      <button id="hat-clear"  class="btn tiny ghost">🗑 Clear</button>
+    </div>
+    <div class="hat-foot">
+      <button id="hat-cancel" class="btn ghost">Cancel</button>
+      <button id="hat-dup"    class="btn ghost">Save Copy</button>
+      <button id="hat-save"   class="btn primary">Save Hat</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROOM LOBBY ============ -->
+<section id="screen-lobby" class="screen hidden">
+  <div class="panel narrow lobby-panel">
+    <h2>Room <span id="lobby-code" class="room-code"></span></h2>
+    <p class="tagline">share the code — friends hop straight in</p>
+    <button id="lobby-invite" class="btn ghost invite">📨 Invite Friends</button>
+    <ul id="lobby-roster" class="roster"></ul>
+    <h3 class="section-title">Map vote <span class="hint">majority wins — ties flip a coin</span></h3>
+    <div id="lobby-maps" class="map-grid"></div>
+    <p id="lobby-status" class="lobby-status"></p>
+    <button id="lobby-ready" class="btn primary big">I'm Ready</button>
+    <button id="lobby-start" class="btn primary big hidden">Start Fight</button>
+    <button id="lobby-edit" class="btn ghost">Edit Fighter &amp; Build</button>
+    <button id="lobby-leave" class="btn ghost">Leave Room</button>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="screen-game" class="screen hidden">
+  <canvas id="game-canvas"></canvas>
+  <div id="game-hud"></div>
+  <div id="touch-layer">
+    <div id="stick-zone"></div>
+    <div id="action-zone"></div>
+    <div id="stick-base" class="hidden"><div id="stick-knob"></div></div>
+    <button id="ability-btn-0" class="ability-btn hidden"><span class="ab-icon"></span><svg viewBox="0 0 40 40"><circle class="cd-ring" cx="20" cy="20" r="18"/></svg></button>
+    <button id="ability-btn-1" class="ability-btn hidden"><span class="ab-icon"></span><svg viewBox="0 0 40 40"><circle class="cd-ring" cx="20" cy="20" r="18"/></svg></button>
+  </div>
+  <div id="game-toast" class="hidden"></div>
+  <button id="game-quit" class="btn tiny ghost">✕</button>
+  <div id="game-help" class="hidden">
+    <div class="help-card">
+      <h3>How to fight</h3>
+      <p><b>Left side:</b> drag to move · flick <b>up</b> to jump · flick <b>down</b> to fast-fall / drop through</p>
+      <p><b>Right side:</b> <b>tap</b> for a quick attack aimed where you're moving · <b>swipe</b> for a smash attack in that direction — swipe <b>up</b> in the air to rise, <b>down</b> to spike!</p>
+      <p><b>Corner buttons:</b> your two abilities</p>
+      <p><b>Controller:</b> stick moves (hold <b>down</b> to duck) · <b>A</b> jump · <b>X</b> quick attack · <b>B/Y</b> smash · bumpers/triggers = abilities</p>
+      <p>Rack up their % — the higher it is, the further they fly. Knock them off to score!</p>
+      <button id="help-close" class="btn primary">Fight!</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section id="screen-results" class="screen hidden">
+  <div class="panel narrow">
+    <h2 id="results-title">Game Over</h2>
+    <ul id="results-list" class="roster"></ul>
+    <button id="results-again" class="btn primary big">Back to Lobby</button>
+    <button id="results-menu" class="btn ghost">Main Menu</button>
+  </div>
+</section>
+
+<!-- ============ HAT LIBRARY (modal) ============ -->
+<div id="hat-library" class="modal hidden">
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>Hat Library</h2>
+      <button id="hatlib-close" class="modal-close" aria-label="Close">✕</button>
+    </header>
+    <div class="hatlib-tabs">
+      <button id="hatlib-tab-mine" class="hatlib-tab on">My Hats</button>
+      <button id="hatlib-tab-town" class="hatlib-tab">🌍 Town Hats</button>
+    </div>
+    <div id="hatlib-mine" class="hatlib-body">
+      <p class="hatlib-hint">Tap a hat to wear it · ✏️ edit · ✕ delete</p>
+      <div id="hatlib-grid" class="hatlib-grid"></div>
+      <button id="hatlib-new" class="btn primary">✏️ Draw New Hat</button>
+    </div>
+    <div id="hatlib-town" class="hatlib-body hidden">
+      <p class="hatlib-hint">Hats fighters in town are showing off — tap 📋 to copy one into your library.</p>
+      <div id="hatlib-town-list" class="hatlib-town-list"></div>
+      <p id="hatlib-town-empty" class="hatlib-empty">Looking for town hats…</p>
+    </div>
+  </div>
+</div>
+
+<div id="net-banner" class="hidden"></div>
+
+<script src="vendor/peerjs.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
